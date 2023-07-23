@@ -12,9 +12,11 @@ export function Modal({ onClose, children }) {
       if (e.code === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleEscapeClose);
+    document.body.classList.toggle('_lock');
 
     return () => {
       window.removeEventListener('keydown', handleEscapeClose);
+      document.body.classList.toggle('_lock');
     };
   }, [onClose]);
 
