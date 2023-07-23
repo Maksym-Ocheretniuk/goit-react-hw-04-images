@@ -77,7 +77,6 @@ export function App() {
     setPage(prevState => prevState + 1);
   };
 
-  // ----- Modal -----
   // const openModal = imageURL => {
   //   setShowModal(true);
   //   setModalImageURL(imageURL);
@@ -87,7 +86,6 @@ export function App() {
     setShowModal(false);
     setModalImageURL('');
   };
-  // ----- Modal -----
 
   return (
     <div className={css.app}>
