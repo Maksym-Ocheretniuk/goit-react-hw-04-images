@@ -52,7 +52,7 @@ export function App() {
           return toast.error('No more pictures');
         }
 
-        setHits([...hits, ...data.hits]);
+        setHits(prevHits => [...prevHits, ...data.hits]);
         setEndOfCollection(false);
       })
       .catch(error => {
