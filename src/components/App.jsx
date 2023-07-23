@@ -21,12 +21,46 @@ import css from './App.module.css';
 export function App() {
   const [inputSearch, setInputSearch] = useState('');
   const [hits, setHits] = useState([]);
-  const [id, setId] = useState('');
+  // const [id, setId] = useState('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [modalImageURL, setModalImageURL] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [endOfCollection, setEndOfCollection] = useState(false);
+
+  useEffect(() => {
+    if (!inputSearch) return;
+
+    setLoading(true);
+
+    getImages(inputSearch, page)
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(new Error(`No ${inputSearch}`));
+      })
+      .then(data => {
+        if (!data.totalHits) {
+          return toast.error(`No pictures for ${inputSearch}`);
+        }
+
+        const totalPages = Math.ceil(data.totalHits / 12);
+
+        if (page === totalPages) {
+          setEndOfCollection(true);
+          return toast.error('No more pictures');
+        }
+
+        setHits([...hits, ...data.hits]);
+        setEndOfCollection(false);
+      })
+      .catch(error => {
+        console.log(error);
+        return toast.error(`Something wrong`);
+      })
+      .finally(() => setLoading(false));
+  }, [inputSearch, page]);
 
   const handleFormSubmit = inputSearch => {
     setInputSearch(inputSearch);
@@ -39,8 +73,18 @@ export function App() {
     setModalImageURL(imageURL);
   };
 
-  const handleLoadMore = page => {
+  const handleLoadMore = () => {
     setPage(prevState => prevState + 1);
+  };
+
+  // const openModal = imageURL => {
+  //   setShowModal(true);
+  //   setModalImageURL(imageURL);
+  // };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setModalImageURL('');
   };
 
   return (
@@ -71,11 +115,11 @@ export function App() {
         <Button onBtnClick={() => handleLoadMore()} />
       )}
       {showModal && (
-        <Modal onClose={this.closeModal}>
+        <Modal onClose={closeModal}>
           <img src={modalImageURL} alt="Modal Window" />
         </Modal>
       )}
-      <ToastContainer autoClose={4000} theme="colored" />
+      <ToastContainer autoClose={2500} theme="colored" />
     </div>
   );
 }
